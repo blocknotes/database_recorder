@@ -1,0 +1,7 @@
+.rubocop-*
+
+Gemfile.lock
+
+_misc/
+spec/dbr
+spec/dummy/log
