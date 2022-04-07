@@ -9,9 +9,11 @@ module DatabaseRecorder
       end
 
       def load
-        data = ::File.exist?(record_file) ? ::File.read(record_file) : false
-        if data
-          @recording.cache = YAML.load(data)
+        stored_data = ::File.exist?(record_file) ? ::File.read(record_file) : false
+        if stored_data
+          data = YAML.load(stored_data)
+          @recording.cache = data['queries']
+          @recording.entities = data['entities']
           true
         else
           false
@@ -19,8 +21,10 @@ module DatabaseRecorder
       end
 
       def save
-        data = @recording.queries.to_yaml
-        ::File.write(record_file, data)
+        data = { 'queries' => @recording.queries }
+        data['entities'] = @recording.entities if @recording.entities.any?
+        serialized_data = data.to_yaml
+        ::File.write(record_file, serialized_data)
       end
 
       private

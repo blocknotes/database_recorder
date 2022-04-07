@@ -9,9 +9,11 @@ module DatabaseRecorder
       end
 
       def load
-        data = self.class.connection.get(@name)
-        if data
-          @recording.cache = JSON.parse(data)
+        stored_data = self.class.connection.get(@name)
+        if stored_data
+          data = JSON.parse(stored_data)
+          @recording.cache = data['queries']
+          @recording.entities = data['entities']
           true
         else
           false
@@ -19,8 +21,10 @@ module DatabaseRecorder
       end
 
       def save
-        data = @recording.queries.to_json
-        self.class.connection.set(@name, data)
+        data = { 'queries' => @recording.queries }
+        data['entities'] = @recording.entities if @recording.entities.any?
+        serialized_data = data.to_json
+        self.class.connection.set(@name, serialized_data)
       end
 
       class << self

@@ -16,6 +16,7 @@ module DatabaseRecorder
                      :replay_recordings=, :storage
 
       def load_defaults
+        instance.db_driver = :active_record
         instance.print_queries = false # false | true | :color
         instance.replay_recordings = false
         self.storage = :file # :file | :redis
@@ -26,6 +27,7 @@ module DatabaseRecorder
           case value
           when :file then DatabaseRecorder::Storage::File
           when :redis then DatabaseRecorder::Storage::Redis
+          when nil then nil
           else raise ArgumentError, "Unknown storage: #{value}"
           end
       end

@@ -4,20 +4,21 @@
 
 module DatabaseRecorder
   module Mysql2
-    class RecordedResult < ::Mysql2::Result
+    class RecordedResult # < ::Mysql2::Result
       # include Enumerable
       # extend Forwardable
 
       # def_delegators :to_a, :each
 
-      attr_reader :count, :fields, :values
+      attr_reader :count, :entries, :fields # , :values
 
       alias :size :count
 
       def prepare(data)
         @count = data['count']
         @fields = data['fields']
-        @values = data['values']
+        @entries = data['values']
+        # @values = data['values']
       end
 
       # def server_flags

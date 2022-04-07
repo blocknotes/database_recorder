@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.platform    = Gem::Platform::RUBY
   spec.name        = 'database_recorder'
   spec.version     = DatabaseRecorder::VERSION
-  spec.summary     = 'A database recorder'
-  spec.description = 'Record application queries'
+  spec.summary     = 'A SQL database recorder'
+  spec.description = 'Record application queries, verify them against stored queries, and replay them.'
 
   spec.authors     = ['Mattia Roccoberton']
   spec.email       = ['mat@blocknot.es']
@@ -22,5 +22,5 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.6.0'
 
-  spec.add_runtime_dependency 'coderay'
+  spec.add_runtime_dependency 'coderay', '~> 1.1'
 end
