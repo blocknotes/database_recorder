@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 module DatabaseRecorder
-  module Postgres
+  module PG
     module Recorder
       def async_exec(sql)
-        Postgres.record(sql: sql, source: :async_exec) do
+        PG.record(sql: sql, source: :async_exec) do
           super
         end
       end
 
       def sync_exec(sql)
-        Postgres.record(sql: sql, source: :sync_exec) do
+        PG.record(sql: sql, source: :sync_exec) do
           super
         end
       end
@@ -26,7 +26,7 @@ module DatabaseRecorder
       # end
 
       def exec_params(*args)
-        Postgres.record(sql: args[0], binds: args[1], source: :exec_params) do
+        PG.record(sql: args[0], binds: args[1], source: :exec_params) do
           super
         end
       end
@@ -42,7 +42,7 @@ module DatabaseRecorder
       # end
 
       def exec_prepared(*args)
-        Postgres.record(sql: args[0], binds: args[1], source: :exec_prepared) do
+        PG.record(sql: args[0], binds: args[1], source: :exec_prepared) do
           super
         end
       end
@@ -61,14 +61,15 @@ module DatabaseRecorder
 
       Core.log_query(sql, source)
       if Config.replay_recordings && !Recording.cache.nil?
-        Recording.push(sql: sql, binds: binds, result: nil)
+        Recording.push(sql: sql, binds: binds)
         data = Recording.cached_query_for(sql)
         return yield unless data # cache miss
 
         RecordedResult.new(data['result'].slice('count', 'fields', 'values'))
       else
         yield.tap do |result|
-          Recording.push(sql: sql, binds: binds, result: result)
+          result_data = result ? { 'count' => result.count, 'fields' => result.fields, 'values' => result.values } : nil
+          Recording.push(sql: sql, binds: binds, result: result_data)
         end
       end
     end

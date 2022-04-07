@@ -1,7 +1,7 @@
 # Database Recorder
 
-Record database queries, for testing and development purposes only.
-Support for PostgreSQL + RSpec at the moment. Store data on files or Redis.
+Record database queries for testing and development purposes only.
+Support for PostgreSQL + RSpec at the moment, storing logs data on files or Redis.
 
 > This project is in Alpha stage, so not fully reliable and major changes could happen
 
@@ -31,12 +31,14 @@ The last feature is not stable yet, consider that it supports only deterministic
 Add to your _spec_helper.rb_:
 
 ```rb
-# To print the queries while executing the specs
+# To print the queries while executing the specs: false | true | :color
 DatabaseRecorder::Config.print_queries = true
+
 # Replay the recordings intercepting the queries
 DatabaseRecorder::Config.replay_recordings = true
-# To store the queries on Redis
-DatabaseRecorder::Config.storage = DatabaseRecorder::Storage::Redis
+
+# To store the queries: :file | :redis
+DatabaseRecorder::Config.storage = :redis
 ```
 
 ## Do you like it? Star it!

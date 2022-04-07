@@ -5,11 +5,12 @@ require 'forwardable'
 module DatabaseRecorder
   class Recording
     attr_accessor :cache
-    attr_reader :queries, :started
+    attr_reader :queries, :options, :started
 
     def initialize(options: {})
       (@@instances ||= {})[Process.pid] = self
       @cache = nil
+      @options = options
       @queries = []
       @search_index = 0
     end
@@ -28,16 +29,21 @@ module DatabaseRecorder
       # cache.shift # TMP
     end
 
-    def push(sql:, binds:, result:)
-      serialize = result ? { 'count' => result.count, 'fields' => result.fields, 'values' => result.values } : nil
-      query = { 'sql' => sql, 'binds' => binds, 'result' => serialize }
+    def push(sql:, binds: nil, result: nil)
+      query = { 'sql' => sql, 'binds' => binds, 'result' => result }.compact
       @queries.push(query)
     end
 
     def start
       @started = true
+      storage = Config.storage.new(self, name: options[:name])
+      cached = storage.load
       yield
+      storage.save unless cached
       @started = false
+      result = { current_queries: queries.map { _1['sql'] } }
+      result[:stored_queries] = cache.map { _1['sql'] } if cached
+      result
     end
 
     class << self

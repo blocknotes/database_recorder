@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DatabaseRecorder
-  module Postgres
+  module PG
     class RecordedResult
       attr_reader :count, :fields, :values, :type_map
 
