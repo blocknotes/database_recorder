@@ -1,34 +1,62 @@
 # Database Recorder
+[![Gem Version](https://badge.fury.io/rb/database_recorder.svg)](https://badge.fury.io/rb/database_recorder)
 
-Record database queries for testing and development purposes only.
-Support only RSpec at the moment, storing logs data on files or Redis.
+Record database queries for testing and development purposes.
+Supports only RSpec at the moment. Store queries information on files or Redis.
 
 Main features:
 - store the history of the queries of a test when it run (for monitoring);
 - eventually check if the current queries match the recorded ones (to prevent regressions);
 - [EXPERIMENTAL] optionally replay the recorded queries replacing the original requests.
 
-See below for more details.
+Sample output: [test.yml](extra/sample.yml)
 
 ## Install
 
-- Add to your Gemfile: `gem 'database_recorder'` (:development, :test groups recommended)
-- With RSpec:
-  + Add to the `spec_helper.rb` (or rails_helper): `DatabaseRecorder::RSpec.setup`
-  + In RSpec examples: add `:dbr` metadata
-  + To verify the matching with the recorded query use: `dbr: { verify_queries: true }`
+- Add to your Gemfile: `gem 'database_recorder', require: false` (:development, :test groups recommended)
+- Using RSpec, add in **rails_helper.rb**:
 
 ```rb
+require 'database_recorder'
+DatabaseRecorder::RSpec.setup
+```
+
+- In the tests add `:dbr` metadata, examples:
+
+```rb
+  # Activate DatabaseRecorder with the default options
   it 'returns 3 posts', :dbr do
     # ...
   end
+
+  # Verify queries comparing with the stored ones:
+  it 'returns more posts', dbr: { verify_queries: true } do
+    # ...
+  end
 ```
+
+Or eventually apply the metadata per path:
+
+```rb
+RSpec.configure do |config|
+  config.define_derived_metadata(file_path: %r{/spec/models/}) do |metadata|
+    metadata[:dbr] = true
+  end
+end
+```
+
+Using an environment variable to enable it:
+
+![image1](extra/image1.png)
 
 ## Config
 
 Add to your _spec_helper.rb_:
 
 ```rb
+# Database driver to use: :active_record | :mysql2 | :pg
+DatabaseRecorder::Config.db_driver = :pg
+
 # To print the queries while executing the specs: false | true | :color
 DatabaseRecorder::Config.print_queries = true
 
