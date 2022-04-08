@@ -1,0 +1,5 @@
+---
+queries:
+- name: Post Load
+  sql: SELECT "posts".* FROM "posts"
+  binds: []

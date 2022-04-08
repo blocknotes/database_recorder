@@ -1,0 +1,77 @@
+---
+queries:
+- name: Profile Create
+  sql: INSERT INTO "profiles" ("created_at", "updated_at") VALUES ($1, $2) RETURNING
+    "id"
+  binds:
+  - '2022-04-08 20:52:57.423023'
+  - '2022-04-08 20:52:57.423023'
+- name: Author Create
+  sql: INSERT INTO "authors" ("name", "age", "email", "created_at", "updated_at")
+    VALUES ($1, $2, $3, $4, $5) RETURNING "id"
+  binds:
+  - John
+  - 20
+  - some@email.com
+  - '2022-04-08 20:52:57.424469'
+  - '2022-04-08 20:52:57.424469'
+- name: Profile Update
+  sql: UPDATE "profiles" SET "author_id" = $1, "updated_at" = $2 WHERE "profiles"."id"
+    = $3
+  binds:
+  - 91
+  - '2022-04-08 20:52:57.425294'
+  - 95
+- name: Author Update
+  sql: UPDATE "authors" SET "updated_at" = $1 WHERE "authors"."id" = $2
+  binds:
+  - '2022-04-08 20:52:57.426183'
+  - 91
+- name: Post Create
+  sql: INSERT INTO "posts" ("title", "description", "author_id", "created_at", "updated_at")
+    VALUES ($1, $2, $3, $4, $5) RETURNING "id"
+  binds:
+  - Just a post
+  - Created by John
+  - 91
+  - '2022-04-08 20:52:57.427081'
+  - '2022-04-08 20:52:57.427081'
+- name: Profile Create
+  sql: INSERT INTO "profiles" ("created_at", "updated_at") VALUES ($1, $2) RETURNING
+    "id"
+  binds:
+  - '2022-04-08 20:52:57.428779'
+  - '2022-04-08 20:52:57.428779'
+- name: Author Create
+  sql: INSERT INTO "authors" ("name", "age", "email", "created_at", "updated_at")
+    VALUES ($1, $2, $3, $4, $5) RETURNING "id"
+  binds:
+  - John
+  - 20
+  - some@email.com
+  - '2022-04-08 20:52:57.429829'
+  - '2022-04-08 20:52:57.429829'
+- name: Profile Update
+  sql: UPDATE "profiles" SET "author_id" = $1, "updated_at" = $2 WHERE "profiles"."id"
+    = $3
+  binds:
+  - 92
+  - '2022-04-08 20:52:57.430645'
+  - 96
+- name: Author Update
+  sql: UPDATE "authors" SET "updated_at" = $1 WHERE "authors"."id" = $2
+  binds:
+  - '2022-04-08 20:52:57.431290'
+  - 92
+- name: Post Create
+  sql: INSERT INTO "posts" ("title", "description", "author_id", "created_at", "updated_at")
+    VALUES ($1, $2, $3, $4, $5) RETURNING "id"
+  binds:
+  - Just a post
+  - Created by John
+  - 92
+  - '2022-04-08 20:52:57.432006'
+  - '2022-04-08 20:52:57.432006'
+- name: Post Load
+  sql: SELECT "posts".* FROM "posts"
+  binds: []

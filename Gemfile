@@ -6,7 +6,9 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gemspec
 
 group :development, :test do
+  gem 'mysql2'
   gem 'pg'
+
   gem 'rails'
   gem 'redis'
   gem 'sprockets'

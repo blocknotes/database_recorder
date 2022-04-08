@@ -10,9 +10,19 @@ AllCops:
     - bin/*
     - spec/dummy/**/*
     - vendor/**/*
+  SuggestExtensions: false
   TargetRubyVersion: 2.6
 
 Lint/UnusedMethodArgument:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 15
+
+RSpec/MessageChain:
   Enabled: false
 
 Style/ClassVars:
