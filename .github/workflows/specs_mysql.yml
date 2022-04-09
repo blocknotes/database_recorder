@@ -1,0 +1,50 @@
+---
+name: Specs MySQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  specs:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ruby: ['2.6', '2.7', '3.0']
+
+    env:
+      DB_ADAPTER: mysql2
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      DB_NAME: database_recorder-test
+
+    services:
+      mysql:
+        image: mysql
+        env:
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+        ports:
+          - 3306:3306
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Start DB
+        run: sudo /etc/init.d/mysql start
+
+      - name: Setup DB
+        run: cd spec/dummy && RAILS_ENV=test bundle exec rails db:create db:migrate
+
+      - name: Run tests
+        run: bundle exec rspec
