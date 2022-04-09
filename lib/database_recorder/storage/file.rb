@@ -2,16 +2,11 @@
 
 module DatabaseRecorder
   module Storage
-    class File
-      def initialize(recording, name:)
-        @recording = recording
-        @name = name
-      end
-
+    class File < Base
       def load
         stored_data = ::File.exist?(record_file) ? ::File.read(record_file) : false
         if stored_data
-          data = YAML.load(stored_data)
+          data = YAML.load(stored_data) # rubocop:disable Security/YAMLLoad
           @recording.cache = data['queries']
           @recording.entities = data['entities']
           true

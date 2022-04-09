@@ -2,12 +2,7 @@
 
 module DatabaseRecorder
   module Storage
-    class Redis
-      def initialize(recording, name:)
-        @recording = recording
-        @name = name
-      end
-
+    class Redis < Base
       def load
         stored_data = self.class.connection.get(@name)
         if stored_data

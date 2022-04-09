@@ -5,12 +5,14 @@ module DatabaseRecorder
     module_function
 
     def log_query(sql, source = nil)
-      case DatabaseRecorder::Config.print_queries
-      when true
-        puts "[DB] #{sql} [#{source}]"
-      when :color
-        puts "[DB] #{CodeRay.scan(sql, :sql).term} [#{source}]"
-      end
+      log =
+        case DatabaseRecorder::Config.print_queries
+        when true then "[DB] #{sql} [#{source}]"
+        when :color then "[DB] #{CodeRay.scan(sql, :sql).term} [#{source}]"
+        end
+
+      puts log if log
+      log
     end
 
     def setup

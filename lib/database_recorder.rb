@@ -9,16 +9,13 @@ if defined? ::ActiveRecord
   require_relative 'database_recorder/activerecord/recorder'
 end
 
-if defined? ::Mysql2
-  require_relative 'database_recorder/mysql2/recorded_result'
-  require_relative 'database_recorder/mysql2/recorder'
-end
+require_relative 'database_recorder/mysql2/recorded_result'
+require_relative 'database_recorder/mysql2/recorder'
 
-if defined? ::PG
-  require_relative 'database_recorder/pg/recorded_result'
-  require_relative 'database_recorder/pg/recorder'
-end
+require_relative 'database_recorder/pg/recorded_result'
+require_relative 'database_recorder/pg/recorder'
 
+require_relative 'database_recorder/storage/base'
 require_relative 'database_recorder/storage/file'
 require_relative 'database_recorder/storage/redis'
 
