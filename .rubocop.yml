@@ -22,6 +22,9 @@ RSpec/DescribeClass:
 RSpec/ExampleLength:
   Max: 15
 
+RSpec/NestedGroups:
+  Max: 4
+
 RSpec/MessageChain:
   Enabled: false
 

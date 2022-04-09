@@ -1,5 +1,5 @@
 ---
-name: Specs PostgreSQL
+name: Specs ActiveRecord
 
 on:
   push:
@@ -16,8 +16,7 @@ jobs:
         ruby: ['2.6', '2.7', '3.0']
 
     env:
-      DB_HOST: localhost
-      DB_ADAPTER: postgresql
+      DB_ADAPTER: active_record
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: database_recorder-test

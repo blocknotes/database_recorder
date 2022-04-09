@@ -20,7 +20,7 @@ module DatabaseRecorder
       current = @search_index
       match = cache[@search_index..].find do |item|
         current += 1
-        item['sql'] == sql # TODo: try matching by normalized query (no values)
+        item['sql'] == sql
       end
       return unless match
 
@@ -55,10 +55,15 @@ module DatabaseRecorder
       result
     end
 
+    def update_last(*args)
+      @queries.last['binds'] = args
+    end
+
     class << self
       extend Forwardable
 
-      def_delegators :current_instance, :cache, :cached_query_for, :from_cache, :new_entity, :pull_entity, :push
+      def_delegators :current_instance, :cache, :cached_query_for, :from_cache, :new_entity, :pull_entity, :push,
+                     :queries, :update_last
 
       def current_instance
         (@@instances ||= {})[Process.pid]

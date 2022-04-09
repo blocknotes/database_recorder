@@ -18,8 +18,8 @@ module DatabaseRecorder
     def setup
       case DatabaseRecorder::Config.db_driver
       when :active_record then ActiveRecord::Recorder.setup
-      when :mysql2 then Mysql2.setup
-      when :pg then PG.setup
+      when :mysql2 then Mysql2::Recorder.setup
+      when :pg then PG::Recorder.setup
       end
     end
   end

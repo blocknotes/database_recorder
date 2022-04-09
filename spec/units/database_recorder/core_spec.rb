@@ -33,8 +33,8 @@ RSpec.describe DatabaseRecorder::Core do
 
     before do
       allow(DatabaseRecorder::ActiveRecord::Recorder).to receive(:setup)
-      allow(DatabaseRecorder::Mysql2).to receive(:setup)
-      allow(DatabaseRecorder::PG).to receive(:setup)
+      allow(DatabaseRecorder::Mysql2::Recorder).to receive(:setup)
+      allow(DatabaseRecorder::PG::Recorder).to receive(:setup)
     end
 
     context 'with config: db_driver = :active_record' do
@@ -45,8 +45,8 @@ RSpec.describe DatabaseRecorder::Core do
 
       it 'calls the ActiveRecord setup method', :aggregate_failures do
         expect(DatabaseRecorder::ActiveRecord::Recorder).to have_received(:setup)
-        expect(DatabaseRecorder::Mysql2).not_to have_received(:setup)
-        expect(DatabaseRecorder::PG).not_to have_received(:setup)
+        expect(DatabaseRecorder::Mysql2::Recorder).not_to have_received(:setup)
+        expect(DatabaseRecorder::PG::Recorder).not_to have_received(:setup)
       end
     end
 
@@ -58,8 +58,8 @@ RSpec.describe DatabaseRecorder::Core do
 
       it 'calls the Mysql2 setup method', :aggregate_failures do
         expect(DatabaseRecorder::ActiveRecord::Recorder).not_to have_received(:setup)
-        expect(DatabaseRecorder::Mysql2).to have_received(:setup)
-        expect(DatabaseRecorder::PG).not_to have_received(:setup)
+        expect(DatabaseRecorder::Mysql2::Recorder).to have_received(:setup)
+        expect(DatabaseRecorder::PG::Recorder).not_to have_received(:setup)
       end
     end
 
@@ -71,8 +71,8 @@ RSpec.describe DatabaseRecorder::Core do
 
       it 'calls the PG setup method', :aggregate_failures do
         expect(DatabaseRecorder::ActiveRecord::Recorder).not_to have_received(:setup)
-        expect(DatabaseRecorder::Mysql2).not_to have_received(:setup)
-        expect(DatabaseRecorder::PG).to have_received(:setup)
+        expect(DatabaseRecorder::Mysql2::Recorder).not_to have_received(:setup)
+        expect(DatabaseRecorder::PG::Recorder).to have_received(:setup)
       end
     end
   end

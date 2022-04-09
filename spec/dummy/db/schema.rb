@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_07_060101) do
+ActiveRecord::Schema[7.0].define(version: 2018_06_07_060101) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
-    t.integer "record_id", null: false
-    t.integer "blob_id", null: false
-    t.datetime "created_at", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
@@ -29,7 +31,7 @@ ActiveRecord::Schema.define(version: 2018_06_07_060101) do
     t.text "metadata"
     t.bigint "byte_size", null: false
     t.string "checksum", null: false
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -37,24 +39,24 @@ ActiveRecord::Schema.define(version: 2018_06_07_060101) do
     t.string "name"
     t.integer "age"
     t.string "email"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "pictures", force: :cascade do |t|
     t.string "name"
     t.string "imageable_type"
-    t.integer "imageable_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "imageable_id"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["imageable_type", "imageable_id"], name: "index_pictures_on_imageable"
   end
 
   create_table "post_tags", force: :cascade do |t|
-    t.integer "post_id"
-    t.integer "tag_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "post_id"
+    t.bigint "tag_id"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["post_id"], name: "index_post_tags_on_post_id"
     t.index ["tag_id"], name: "index_post_tags_on_tag_id"
   end
@@ -62,28 +64,28 @@ ActiveRecord::Schema.define(version: 2018_06_07_060101) do
   create_table "posts", force: :cascade do |t|
     t.string "title"
     t.text "description"
-    t.integer "author_id"
+    t.bigint "author_id"
     t.string "category"
-    t.datetime "dt"
+    t.datetime "dt", precision: nil
     t.float "position"
     t.boolean "published"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["author_id"], name: "index_posts_on_author_id"
   end
 
   create_table "profiles", force: :cascade do |t|
     t.text "description"
-    t.integer "author_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "author_id"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["author_id"], name: "index_profiles_on_author_id"
   end
 
   create_table "tags", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

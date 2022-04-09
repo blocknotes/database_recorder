@@ -4,7 +4,9 @@
 
 module DatabaseRecorder
   module Mysql2
-    class RecordedResult # < ::Mysql2::Result
+    class RecordedResult
+      # < ::Mysql2::Result
+
       # include Enumerable
       # extend Forwardable
 
