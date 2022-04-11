@@ -1,5 +1,9 @@
 # Database Recorder
 [![Gem Version](https://badge.fury.io/rb/database_recorder.svg)](https://badge.fury.io/rb/database_recorder)
+[![Linters](https://github.com/blocknotes/database_recorder/actions/workflows/linters.yml/badge.svg)](https://github.com/blocknotes/database_recorder/actions/workflows/linters.yml)
+[![Specs ActiveRecord](https://github.com/blocknotes/database_recorder/actions/workflows/specs_active_record.yml/badge.svg)](https://github.com/blocknotes/database_recorder/actions/workflows/specs_active_record.yml)
+[![Specs MySQL](https://github.com/blocknotes/database_recorder/actions/workflows/specs_mysql.yml/badge.svg)](https://github.com/blocknotes/database_recorder/actions/workflows/specs_mysql.yml)
+[![Specs PostgreSQL](https://github.com/blocknotes/database_recorder/actions/workflows/specs_postgres.yml/badge.svg)](https://github.com/blocknotes/database_recorder/actions/workflows/specs_postgres.yml)
 
 Record database queries for testing and development purposes.
 Supports only RSpec at the moment. Store queries information on files or Redis.
