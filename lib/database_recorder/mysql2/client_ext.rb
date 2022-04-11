@@ -4,13 +4,13 @@ module DatabaseRecorder
   module Mysql2
     module ClientExt
       def query(sql, options = {})
-        Recorder.record(self, sql: sql) do
+        Recorder.record(self, sql: sql, source: :query) do
           super
         end
       end
 
       def prepare(*args)
-        Recorder.record(self, sql: args[0]) do
+        Recorder.prepare_statement(self, sql: args[0], source: :prepare) do
           super
         end
       end

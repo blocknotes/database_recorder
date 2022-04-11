@@ -25,6 +25,7 @@ RSpec.describe DatabaseRecorder::PG::Recorder, skip: ENV['DB_ADAPTER'] != 'postg
     end
 
     after do
+      allow(DatabaseRecorder::Config).to receive(:print_queries).and_return(false)
       connection.exec('DELETE FROM tags')
     end
 
@@ -39,9 +40,7 @@ RSpec.describe DatabaseRecorder::PG::Recorder, skip: ENV['DB_ADAPTER'] != 'postg
     end
 
     context 'with config: print_queries = true' do
-      before do
-        allow(DatabaseRecorder::Config).to receive(:print_queries).and_return(true)
-      end
+      before { allow(DatabaseRecorder::Config).to receive(:print_queries).and_return(true) }
 
       it { expect { exec_query }.to output(a_string_including(sql)).to_stdout }
     end
@@ -56,7 +55,8 @@ RSpec.describe DatabaseRecorder::PG::Recorder, skip: ENV['DB_ADAPTER'] != 'postg
         exec_query
         expect(DatabaseRecorder::Recording.queries).to match_array(
           a_hash_including(
-            'sql' => 'statement1',
+            'name' => 'statement1',
+            'sql' => 'SELECT name FROM tags WHERE name = $1',
             'result' => { 'count' => 1, 'fields' => ['name'], 'values' => [['tag2']] }
           )
         )

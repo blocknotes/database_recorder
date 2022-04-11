@@ -5,7 +5,7 @@ require 'forwardable'
 module DatabaseRecorder
   class Recording
     attr_accessor :cache, :entities
-    attr_reader :from_cache, :options, :queries, :started
+    attr_reader :from_cache, :options, :prepared_queries, :queries, :started
 
     def initialize(options: {})
       (@@instances ||= {})[Process.pid] = self
@@ -14,6 +14,7 @@ module DatabaseRecorder
       @options = options
       @queries = []
       @search_index = 0
+      @@prepared_queries ||= {}
     end
 
     def cached_query_for(sql)
@@ -38,9 +39,14 @@ module DatabaseRecorder
       @entities.shift
     end
 
-    def push(sql:, binds: nil, result: nil, name: nil)
+    def push(sql:, name: nil, binds: nil, result: nil, source: nil)
       query = { 'name' => name, 'sql' => sql, 'binds' => binds, 'result' => result }.compact
       @queries.push(query)
+    end
+
+    def push_prepared(name: nil, sql: nil, binds: nil, result: nil, source: nil)
+      query = { 'name' => name, 'sql' => sql, 'binds' => binds, 'result' => result }.compact
+      @@prepared_queries[name || sql] = query
     end
 
     def start
@@ -55,15 +61,20 @@ module DatabaseRecorder
       result
     end
 
-    def update_last(*args)
-      @queries.last['binds'] = args
+    def update_prepared(name: nil, sql: nil, binds: nil, result: nil, source: nil)
+      query = @@prepared_queries[name || sql]
+      query['sql'] = sql if sql
+      query['binds'] = binds if binds
+      query['result'] = result if result
+      @queries.push(query)
+      query
     end
 
     class << self
       extend Forwardable
 
-      def_delegators :current_instance, :cache, :cached_query_for, :from_cache, :new_entity, :pull_entity, :push,
-                     :queries, :update_last
+      def_delegators :current_instance, :cache, :cached_query_for, :from_cache, :new_entity, :prepared_queries,
+                     :pull_entity, :push, :push_prepared, :queries, :update_prepared
 
       def current_instance
         (@@instances ||= {})[Process.pid]
