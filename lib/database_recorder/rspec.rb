@@ -14,8 +14,7 @@ module DatabaseRecorder
           ref = (example.metadata[:scoped_id] || '').split(':')[-1]
           options = {}
           options.merge!(example.metadata[:dbr]) if example.metadata[:dbr].is_a?(Hash)
-          options.merge!(example: example)
-          options.merge!(name: "#{example.full_description}__#{ref}") # TODO: if name is already set, append ref
+          options.merge!(example: example, name: "#{example.full_description}__#{ref}")
           Recording.new(options: options).tap do |recording|
             result = recording.start { example.run }
             if options[:verify_queries] && result[:stored_queries]

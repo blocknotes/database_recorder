@@ -45,6 +45,7 @@ RSpec.configure do |config|
     intro << "\n"
     intro << "- Ruby:        #{RUBY_VERSION}\n"
     intro << "- Rails:       #{Rails.version}\n"
+    intro << "- Database:    #{ActiveRecord::Base.connection_db_config.adapter}\n"
     intro << ('-' * 80)
 
     RSpec.configuration.reporter.message(intro)

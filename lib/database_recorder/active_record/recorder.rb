@@ -2,12 +2,17 @@
 
 module DatabaseRecorder
   module ActiveRecord
-    module AbstractAdapterExt
-      def log(sql, name = 'SQL', binds = [], type_casted_binds = [], *args)
-        # puts "--- #{sql} | #{type_casted_binds}", "  > #{name}"
-        return super unless Recording.started?
-        return super if %w[schema transaction].include?(name&.downcase)
-        return super if sql.downcase.match(/\A(begin|commit|release|rollback|savepoint)/i)
+    module Recorder
+      module_function
+
+      def ignore_query?(sql, name)
+        !Recording.started? ||
+          %w[schema transaction].include?(name&.downcase) ||
+          sql.downcase.match?(/\A(begin|commit|release|rollback|savepoint)/i)
+      end
+
+      def record(adapter, sql, name = 'SQL', binds = [], type_casted_binds = [], *args)
+        return yield if ignore_query?(sql, name)
 
         Core.log_query(sql, name)
         if Config.replay_recordings && Recording.from_cache
@@ -17,9 +22,9 @@ module DatabaseRecorder
 
           RecordedResult.new(data['result']['fields'], data['result']['values'])
         else
-          super.tap do |result|
+          yield.tap do |result|
             result_data =
-              if result.is_a?(::ActiveRecord::Result)
+              if result && (result.respond_to?(:fields) || result.respond_to?(:columns))
                 fields = result.respond_to?(:fields) ? result.fields : result.columns
                 values = result.respond_to?(:values) ? result.values : result.to_a
                 { 'count' => result.count, 'fields' => fields, 'values' => values }
@@ -27,6 +32,16 @@ module DatabaseRecorder
             Recording.push(sql: sql, name: name, binds: type_casted_binds, result: result_data)
           end
         end
+      end
+
+      def setup
+        ::ActiveRecord::ConnectionAdapters::AbstractAdapter.class_eval do
+          prepend AbstractAdapterExt
+        end
+
+        # ::ActiveRecord::Base.class_eval do
+        #   prepend BaseExt
+        # end
       end
     end
   end
