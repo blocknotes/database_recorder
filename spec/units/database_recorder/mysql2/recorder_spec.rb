@@ -49,7 +49,7 @@ RSpec.describe DatabaseRecorder::Mysql2::Recorder, skip: ENV['DB_ADAPTER'] != 'm
     context 'with prepared statements' do
       let(:exec_query) do
         statement = ::Mysql2::Client.new(db_config).prepare('SELECT name FROM tags WHERE name = ?')
-        statement.execute(['tag2'])
+        statement.execute('tag2')
       end
 
       before do
@@ -63,7 +63,8 @@ RSpec.describe DatabaseRecorder::Mysql2::Recorder, skip: ENV['DB_ADAPTER'] != 'm
         expect(DatabaseRecorder::Recording.queries).to match_array(
           a_hash_including(
             'sql' => 'SELECT name FROM tags WHERE name = ?',
-            'binds' => [['tag2']]
+            'binds' => ['tag2'],
+            'result' => { 'count' => 1, 'fields' => ['name'], 'values' => [{ 'name' => 'tag2' }] }
           )
         )
       end
