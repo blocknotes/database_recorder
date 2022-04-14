@@ -24,23 +24,6 @@ module DatabaseRecorder
         yield if !Config.replay_recordings || Recording.cache.nil?
       end
 
-      def record(adapter, sql:, source:)
-        return yield if ignore_query?(sql)
-
-        Core.log_query(sql, source)
-        if Config.replay_recordings && !Recording.cache.nil?
-          Recording.push(sql: sql, source: source)
-          data = Recording.cached_query_for(sql)
-          return yield unless data # cache miss
-
-          RecordedResult.new.prepare(data['result'].slice('count', 'fields', 'values')) if data['result']
-        else
-          yield.tap do |result|
-            Recording.push(sql: sql, result: format_result(result), source: source)
-          end
-        end
-      end
-
       def setup
         ::Mysql2::Client.class_eval do
           prepend ClientExt
@@ -51,7 +34,7 @@ module DatabaseRecorder
         end
       end
 
-      def update_record(adapter, source:, binds:)
+      def store_prepared_statement(adapter, source:, binds:)
         # sql = @last_prepared&.send(:[], 'sql')
         sql = @last_prepared['sql']
         Core.log_query(sql, source)
@@ -64,6 +47,23 @@ module DatabaseRecorder
         else
           yield.tap do |result|
             Recording.update_prepared(sql: sql, binds: binds, result: format_result(result), source: source)
+          end
+        end
+      end
+
+      def store_query(adapter, sql:, source:)
+        return yield if ignore_query?(sql)
+
+        Core.log_query(sql, source)
+        if Config.replay_recordings && !Recording.cache.nil?
+          Recording.push(sql: sql, source: source)
+          data = Recording.cached_query_for(sql)
+          return yield unless data # cache miss
+
+          RecordedResult.new.prepare(data['result'].slice('count', 'fields', 'values')) if data['result']
+        else
+          yield.tap do |result|
+            Recording.push(sql: sql, result: format_result(result), source: source)
           end
         end
       end

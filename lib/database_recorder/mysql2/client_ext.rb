@@ -4,7 +4,7 @@ module DatabaseRecorder
   module Mysql2
     module ClientExt
       def query(sql, options = {})
-        Recorder.record(self, sql: sql, source: :query) do
+        Recorder.store_query(self, sql: sql, source: :query) do
           super
         end
       end

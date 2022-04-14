@@ -20,31 +20,13 @@ module DatabaseRecorder
         yield if !Config.replay_recordings || Recording.cache.nil?
       end
 
-      def record(name: nil, sql: nil, binds: nil, source: nil)
-        return yield if ignore_query?(sql)
-
-        Core.log_query(sql, source)
-        @prepared_statement = nil
-        if Config.replay_recordings && !Recording.cache.nil?
-          Recording.push(sql: sql, binds: binds, source: source)
-          data = Recording.cached_query_for(sql)
-          return yield unless data # cache miss
-
-          RecordedResult.new(data['result'].slice('count', 'fields', 'values'))
-        else
-          yield.tap do |result|
-            Recording.push(name: name, sql: sql, binds: binds, result: format_result(result), source: source)
-          end
-        end
-      end
-
       def setup
         ::PG::Connection.class_eval do
           prepend ConnectionExt
         end
       end
 
-      def update_record(name: nil, sql: nil, binds: nil, source: nil)
+      def store_prepared_statement(name: nil, sql: nil, binds: nil, source: nil)
         if Config.replay_recordings && !Recording.cache.nil?
           data = Recording.cache.find { |query| query['name'] == name }
           return yield unless data # cache miss
@@ -58,6 +40,24 @@ module DatabaseRecorder
             result = format_result(query_result)
             query = Recording.update_prepared(name: name, sql: sql, binds: binds, result: result, source: source)
             Core.log_query(query['sql'], source)
+          end
+        end
+      end
+
+      def store_query(name: nil, sql: nil, binds: nil, source: nil)
+        return yield if ignore_query?(sql)
+
+        Core.log_query(sql, source)
+        @prepared_statement = nil
+        if Config.replay_recordings && !Recording.cache.nil?
+          Recording.push(sql: sql, binds: binds, source: source)
+          data = Recording.cached_query_for(sql)
+          return yield unless data # cache miss
+
+          RecordedResult.new(data['result'].slice('count', 'fields', 'values'))
+        else
+          yield.tap do |result|
+            Recording.push(name: name, sql: sql, binds: binds, result: format_result(result), source: source)
           end
         end
       end
