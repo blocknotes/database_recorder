@@ -3,6 +3,32 @@
 require 'rails_helper'
 
 RSpec.describe DatabaseRecorder::Storage::Redis do
+  describe '#connection' do
+    subject(:connection) { redis_storage.connection }
+
+    let(:redis_storage) { described_class.new(instance_double(DatabaseRecorder::Recording), name: 'some name') }
+
+    before { allow(::Redis).to receive(:new).and_call_original }
+
+    it 'returns a Redis connection', :aggregate_failures do
+      expect(connection).to be_kind_of Redis
+      expect(::Redis).to have_received(:new)
+    end
+
+    context 'when connection is passed in options' do
+      let(:redis_storage) do
+        described_class.new(recording, name: 'some name', options: { connection: some_connection })
+      end
+      let(:recording) { instance_double(DatabaseRecorder::Recording) }
+      let(:some_connection) { instance_double(::Redis) }
+
+      it 'returns the connection', :aggregate_failures do
+        expect(connection).to eq some_connection
+        expect(::Redis).not_to have_received(:new)
+      end
+    end
+  end
+
   describe '#load' do
     subject(:load) { redis_storage.load }
 

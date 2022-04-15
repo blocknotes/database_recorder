@@ -70,6 +70,12 @@ DatabaseRecorder::Config.replay_recordings = true
 # To store the queries: :file | :redis | nil
 DatabaseRecorder::Config.storage = :redis
 # nil to avoid storing the queries
+
+# File storage options
+DatabaseRecorder::Config.storage_options = { recordings_path: '/some/path' }
+
+# Redis storage options
+DatabaseRecorder::Config.storage_options = { connection: Redis.new }
 ```
 
 ## History of the queries

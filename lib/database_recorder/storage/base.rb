@@ -3,9 +3,10 @@
 module DatabaseRecorder
   module Storage
     class Base
-      def initialize(recording, name:)
+      def initialize(recording, name:, options: {})
         @recording = recording
         @name = name
+        @options = options
       end
     end
   end

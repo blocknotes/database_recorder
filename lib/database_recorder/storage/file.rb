@@ -28,7 +28,7 @@ module DatabaseRecorder
       def storage_path
         @storage_path ||= begin
           name = normalize_name(@name)
-          path = 'spec/dbr'
+          path = @options[:recordings_path] || 'spec/dbr'
           FileUtils.mkdir_p(path)
           "#{path}/#{name}.yml"
         end

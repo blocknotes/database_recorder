@@ -3,8 +3,12 @@
 module DatabaseRecorder
   module Storage
     class Redis < Base
+      def connection
+        @connection ||= @options[:connection] || ::Redis.new
+      end
+
       def load
-        stored_data = self.class.connection.get(@name)
+        stored_data = connection.get(@name)
         if stored_data
           data = JSON.parse(stored_data)
           @recording.cache = data['queries'] || []
@@ -21,14 +25,8 @@ module DatabaseRecorder
         data['queries'] = @recording.queries if @recording.queries.any?
         data['entities'] = @recording.entities if @recording.entities.any?
         serialized_data = data.to_json
-        self.class.connection.set(@name, serialized_data)
+        connection.set(@name, serialized_data)
         true
-      end
-
-      class << self
-        def connection
-          ::Redis.new
-        end
       end
     end
   end

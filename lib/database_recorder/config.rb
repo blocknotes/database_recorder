@@ -17,18 +17,20 @@ module DatabaseRecorder
       redis: DatabaseRecorder::Storage::Redis
     }.freeze
 
-    attr_accessor :db_driver, :print_queries, :replay_recordings, :storage
+    attr_accessor :db_driver, :print_queries, :replay_recordings, :storage, :storage_options
 
     class << self
       extend Forwardable
 
-      def_delegators :instance, :db_driver, :print_queries, :replay_recordings, :replay_recordings=, :storage
+      def_delegators :instance, :db_driver, :print_queries, :replay_recordings, :replay_recordings=, :storage,
+                     :storage_options=
 
       def load_defaults
         instance.db_driver = DEFAULT_DB_DRIVER
         instance.print_queries = false
         instance.replay_recordings = false
         instance.storage = DEFAULT_STORAGE
+        instance.storage_options = {}
       end
 
       def db_driver=(value)

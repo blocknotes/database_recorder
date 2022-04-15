@@ -58,12 +58,25 @@ RSpec.describe DatabaseRecorder::Storage::File do
   end
 
   describe '#storage_path' do
-    subject(:storage_path) { described_class.new(recording, name: 'a A1!b#B-_c@C').storage_path }
+    subject(:storage_path) { file_storage.storage_path }
 
+    let(:file_storage) { described_class.new(recording, name: 'some name') }
     let(:recording) { instance_double(DatabaseRecorder::Recording) }
 
+    before { allow(FileUtils).to receive(:mkdir_p) }
+
     it 'returns the path to the storage file' do
-      expect(storage_path).to eq('spec/dbr/a_A1_b_B-_c_C.yml')
+      expect(storage_path).to eq('spec/dbr/some_name.yml')
+    end
+
+    context 'when recordings_path is passed in options' do
+      let(:file_storage) do
+        described_class.new(recording, name: 'some name', options: { recordings_path: '/some/path' })
+      end
+
+      it 'returns the path to the storage file' do
+        expect(storage_path).to eq '/some/path/some_name.yml'
+      end
     end
   end
 end
