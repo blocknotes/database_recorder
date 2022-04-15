@@ -4,13 +4,14 @@ require 'forwardable'
 
 module DatabaseRecorder
   class Recording
-    attr_accessor :cache, :entities
+    attr_accessor :cache, :entities, :metadata
     attr_reader :from_cache, :options, :prepared_queries, :queries, :started
 
     def initialize(options: {})
       (@@instances ||= {})[Process.pid] = self
       @cache = nil
       @entities = []
+      @metadata = {}
       @options = options
       @queries = []
       @search_index = 0

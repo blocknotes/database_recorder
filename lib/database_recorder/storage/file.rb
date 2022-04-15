@@ -16,7 +16,9 @@ module DatabaseRecorder
       end
 
       def save
-        data = { 'queries' => @recording.queries }
+        data = {}
+        data['metadata'] = @recording.metadata unless @recording.metadata.empty?
+        data['queries'] = @recording.queries if @recording.queries.any?
         data['entities'] = @recording.entities if @recording.entities.any?
         serialized_data = data.to_yaml
         ::File.write(record_file, serialized_data)
