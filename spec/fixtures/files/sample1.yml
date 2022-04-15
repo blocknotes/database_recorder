@@ -1,0 +1,98 @@
+---
+metadata:
+  example: "./spec/requests/api/v1/posts_spec.rb[1:2:2:1]"
+  started_at: 2022-04-14 22:55:28.116612000 +02:00
+queries:
+- name: Profile Create
+  sql: INSERT INTO "profiles" ("created_at", "updated_at") VALUES ($1, $2) RETURNING
+    "id"
+  binds:
+  - '2022-04-14 20:55:28.117847'
+  - '2022-04-14 20:55:28.117847'
+  result:
+    count: 1
+    fields:
+    - id
+    values:
+    - - 1234
+- name: Author Create
+  sql: INSERT INTO "authors" ("name", "age", "email", "created_at", "updated_at")
+    VALUES ($1, $2, $3, $4, $5) RETURNING "id"
+  binds:
+  - John
+  - 20
+  - some@email.com
+  - '2022-04-14 20:55:28.120914'
+  - '2022-04-14 20:55:28.120914'
+  result:
+    count: 1
+    fields:
+    - id
+    values:
+    - - 1233
+- name: Profile Update
+  sql: UPDATE "profiles" SET "author_id" = $1, "updated_at" = $2 WHERE "profiles"."id"
+    = $3
+  binds:
+  - 1233
+  - '2022-04-14 20:55:28.123026'
+  - 1234
+  result:
+    count: 0
+    fields: []
+    values: []
+- name: Author Update
+  sql: UPDATE "authors" SET "updated_at" = $1 WHERE "authors"."id" = $2
+  binds:
+  - '2022-04-14 20:55:28.124854'
+  - 1233
+  result:
+    count: 0
+    fields: []
+    values: []
+- name: Post Create
+  sql: INSERT INTO "posts" ("title", "description", "author_id", "created_at", "updated_at")
+    VALUES ($1, $2, $3, $4, $5) RETURNING "id"
+  binds:
+  - Just a post
+  - Created by John
+  - 1233
+  - '2022-04-14 20:55:28.127041'
+  - '2022-04-14 20:55:28.127041'
+  result:
+    count: 1
+    fields:
+    - id
+    values:
+    - - 1226
+- name: Post Load
+  sql: SELECT "posts".* FROM "posts" WHERE "posts"."id" = $1 LIMIT $2
+  binds:
+  - 1226
+  - 1
+  result:
+    count: 1
+    fields:
+    - id
+    - state
+    - title
+    - description
+    - author_id
+    - category
+    - dt
+    - position
+    - published
+    - created_at
+    - updated_at
+    values:
+    - - 1226
+      - 0
+      - Just a post
+      - Created by John
+      - 1233
+      -
+      -
+      -
+      -
+      - 2022-04-14 20:55:28.127041000 Z
+      - 2022-04-14 20:55:28.127041000 Z

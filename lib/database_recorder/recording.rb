@@ -52,7 +52,7 @@ module DatabaseRecorder
 
     def start
       @started = true
-      storage = Config.storage&.new(self, name: options[:name])
+      storage = Config.storage&.new(self, name: options[:name], options: Config.storage_options)
       @from_cache = storage&.load
       yield
       storage&.save unless from_cache
