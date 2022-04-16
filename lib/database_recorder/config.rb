@@ -23,7 +23,7 @@ module DatabaseRecorder
       extend Forwardable
 
       def_delegators :instance, :db_driver, :print_queries, :replay_recordings, :replay_recordings=, :storage,
-                     :storage_options=
+                     :storage_options, :storage_options=
 
       def load_defaults
         instance.db_driver = DEFAULT_DB_DRIVER
