@@ -8,6 +8,7 @@ module DatabaseRecorder
     include Singleton
 
     DEFAULT_DB_DRIVER = :active_record
+    DEFAULT_LOG_FORMAT = '[DB] %sql [%name]'
     DEFAULT_STORAGE = DatabaseRecorder::Storage::File
 
     DB_DRIVER_VALUES = %i[active_record mysql2 pg].freeze
@@ -17,16 +18,17 @@ module DatabaseRecorder
       redis: DatabaseRecorder::Storage::Redis
     }.freeze
 
-    attr_accessor :db_driver, :print_queries, :replay_recordings, :storage, :storage_options
+    attr_accessor :db_driver, :log_format, :print_queries, :replay_recordings, :storage, :storage_options
 
     class << self
       extend Forwardable
 
-      def_delegators :instance, :db_driver, :print_queries, :replay_recordings, :replay_recordings=, :storage,
-                     :storage_options, :storage_options=
+      def_delegators :instance, :db_driver, :log_format, :log_format=, :print_queries, :replay_recordings,
+                     :replay_recordings=, :storage, :storage_options, :storage_options=
 
       def load_defaults
         instance.db_driver = DEFAULT_DB_DRIVER
+        instance.log_format = DEFAULT_LOG_FORMAT
         instance.print_queries = false
         instance.replay_recordings = false
         instance.storage = DEFAULT_STORAGE

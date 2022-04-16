@@ -61,7 +61,10 @@ Add to your _spec_helper.rb_:
 # Database driver to use: :active_record | :mysql2 | :pg
 DatabaseRecorder::Config.db_driver = :pg
 
-# To print the queries while executing the specs: false | true | :color
+# Log queries format (default: '[DB] %sql [%name]')
+DatabaseRecorder::Config.log_format = '>>> %name -- %sql'
+
+# To print/log the queries while executing the specs: false | true | :color
 DatabaseRecorder::Config.print_queries = true
 
 # Replay the recordings intercepting the queries
