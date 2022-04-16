@@ -28,6 +28,22 @@ RSpec.describe DatabaseRecorder::Config do
     end
   end
 
+  describe '.db_driver=' do
+    subject(:set_db_driver) { described_class.db_driver = nil }
+
+    before { described_class.db_driver = :pg }
+
+    it { expect { set_db_driver }.to change(described_class, :db_driver).to(described_class::DEFAULT_DB_DRIVER) }
+  end
+
+  describe '.print_queries=' do
+    subject(:set_print_queries) { described_class.print_queries = nil }
+
+    before { described_class.print_queries = true }
+
+    it { expect { set_print_queries }.to change(described_class, :print_queries).to(false) }
+  end
+
   describe '.storage=' do
     context 'with nil argument' do
       subject(:set_storage) { described_class.storage = nil }
@@ -52,6 +68,15 @@ RSpec.describe DatabaseRecorder::Config do
       it do
         file_storage = DatabaseRecorder::Storage::File
         expect { set_storage }.to change(described_class, :storage).from(nil).to(file_storage)
+      end
+    end
+
+    context 'with a Storage class argument' do
+      subject(:set_storage) { described_class.storage = DatabaseRecorder::Storage::Redis }
+
+      it do
+        redis_storage = DatabaseRecorder::Storage::Redis
+        expect { set_storage }.to change(described_class, :storage).from(default_storage).to(redis_storage)
       end
     end
   end

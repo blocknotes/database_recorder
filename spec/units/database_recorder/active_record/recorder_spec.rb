@@ -14,7 +14,7 @@ RSpec.describe DatabaseRecorder::ActiveRecord::Recorder, skip: ENV['DB_ADAPTER']
       Post.count
       expected_args = hash_including(
         sql: a_string_matching(/SELECT COUNT.*FROM.*posts/),
-        result: { 'count' => 1, 'fields' => ['count'], 'values' => [[3]] }
+        result: { count: 1, fields: ['count'], values: [[3]] }
       )
       expect(DatabaseRecorder::Recording).to have_received(:push).with(expected_args)
     end

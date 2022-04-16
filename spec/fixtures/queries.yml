@@ -1,0 +1,9 @@
+---
+sample1:
+  name: Post Load
+  sql: SELECT "posts".* FROM "posts"
+  binds: []
+  result:
+    count: 0
+    fields: ["id", "state", "title", "description", "author_id", "category", "dt", "position", "published", "created_at", "updated_at"]
+    values: []

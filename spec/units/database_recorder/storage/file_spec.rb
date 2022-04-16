@@ -9,23 +9,29 @@ RSpec.describe DatabaseRecorder::Storage::File do
     let(:file_storage) { described_class.new(recording, name: 'some name') }
     let(:recording) { instance_double(DatabaseRecorder::Recording, :cache= => nil, :entities= => nil) }
 
-    before do
-      allow(file_storage).to receive(:storage_path).and_return(file_fixture('sample1.yml').to_s)
+    context 'with a valid recordings file' do
+      before { allow(file_storage).to receive(:storage_path).and_return(file_fixture('sample1.yml').to_s) }
+
+      it 'loads data from file', :aggregate_failures do
+        test_cache = array_including(
+          a_hash_including(
+            binds: a_kind_of(Array),
+            name: 'Post Load',
+            result: a_kind_of(Hash),
+            sql: 'SELECT "posts".* FROM "posts" WHERE "posts"."id" = $1 LIMIT $2'
+          )
+        )
+
+        expect(load).to be == true
+        expect(recording).to have_received(:cache=).with(test_cache)
+        expect(recording).to have_received(:entities=)
+      end
     end
 
-    it 'loads data from file', :aggregate_failures do
-      test_cache = array_including(
-        a_hash_including(
-          'binds' => a_kind_of(Array),
-          'name' => 'Post Load',
-          'result' => a_kind_of(Hash),
-          'sql' => 'SELECT "posts".* FROM "posts" WHERE "posts"."id" = $1 LIMIT $2'
-        )
-      )
+    context 'when the recordings file is missing' do
+      before { allow(file_storage).to receive(:storage_path).and_return('/tmp/some_missing_file') }
 
-      expect(load).to be == true
-      expect(recording).to have_received(:cache=).with(test_cache)
-      expect(recording).to have_received(:entities=)
+      it { expect(load).to be == false }
     end
   end
 

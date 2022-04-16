@@ -6,9 +6,10 @@ module DatabaseRecorder
       def load
         stored_data = ::File.exist?(storage_path) ? ::File.read(storage_path) : false
         if stored_data
-          data = YAML.load(stored_data) # rubocop:disable Security/YAMLLoad
-          @recording.cache = data['queries'] || []
-          @recording.entities = data['entities']
+          parsed_data = YAML.load(stored_data) # rubocop:disable Security/YAMLLoad
+          data = Core.symbolize_recursive(parsed_data)
+          @recording.cache = data[:queries] || []
+          @recording.entities = data[:entities]
           true
         else
           false
@@ -17,10 +18,10 @@ module DatabaseRecorder
 
       def save
         data = {}
-        data['metadata'] = @recording.metadata unless @recording.metadata.empty?
-        data['queries'] = @recording.queries if @recording.queries.any?
-        data['entities'] = @recording.entities if @recording.entities.any?
-        serialized_data = data.to_yaml
+        data[:metadata] = @recording.metadata unless @recording.metadata.empty?
+        data[:queries] = @recording.queries if @recording.queries.any?
+        data[:entities] = @recording.entities if @recording.entities.any?
+        serialized_data = Core.string_keys_recursive(data).to_yaml
         ::File.write(storage_path, serialized_data)
         true
       end
