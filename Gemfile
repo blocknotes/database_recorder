@@ -15,6 +15,7 @@ group :development, :test do
   # Testing
   gem 'factory_bot_rails'
   gem 'rspec-rails'
+  gem 'simplecov', require: false
 
   # Linters
   gem 'fasterer'

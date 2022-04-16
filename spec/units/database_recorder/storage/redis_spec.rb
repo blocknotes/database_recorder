@@ -32,29 +32,40 @@ RSpec.describe DatabaseRecorder::Storage::Redis do
   describe '#load' do
     subject(:load) { redis_storage.load }
 
-    let(:redis) { instance_double(::Redis, get: stored_data) }
     let(:redis_storage) { described_class.new(recording, name: 'some name') }
     let(:recording) { instance_double(DatabaseRecorder::Recording, :cache= => nil, :entities= => nil) }
-    let(:stored_data) do
-      '{"queries":[{"name":"Post Load","sql":"SELECT \"posts\".* FROM \"posts\"","binds":[],"result":{"count":0,"fields":["id","state","title","description","author_id","category","dt","position","published","created_at","updated_at"],"values":[]}}],"entities":[]}'
+
+    context 'with valid recording data' do
+      let(:redis) { instance_double(::Redis, get: stored_data) }
+      let(:stored_data) do
+        '{"queries":[{"name":"Post Load","sql":"SELECT \"posts\".* FROM \"posts\"","binds":[],"result":{"count":0,"fields":["id","state","title","description","author_id","category","dt","position","published","created_at","updated_at"],"values":[]}}],"entities":[]}'
+      end
+
+      before { allow(::Redis).to receive(:new).and_return(redis) }
+
+      it 'loads data from redis', :aggregate_failures do
+        test_cache = array_including(
+          a_hash_including(
+            binds: a_kind_of(Array),
+            name: 'Post Load',
+            result: a_kind_of(Hash),
+            sql: 'SELECT "posts".* FROM "posts"'
+          )
+        )
+
+        expect(load).to be == true
+        expect(redis).to have_received(:get).with('some name')
+        expect(recording).to have_received(:cache=).with(test_cache)
+        expect(recording).to have_received(:entities=)
+      end
     end
 
-    before { allow(::Redis).to receive(:new).and_return(redis) }
+    context 'when the recordings is missing' do
+      let(:redis) { instance_double(::Redis, get: false) }
 
-    it 'loads data from redis', :aggregate_failures do
-      test_cache = array_including(
-        a_hash_including(
-          binds: a_kind_of(Array),
-          name: 'Post Load',
-          result: a_kind_of(Hash),
-          sql: 'SELECT "posts".* FROM "posts"'
-        )
-      )
+      before { allow(::Redis).to receive(:new).and_return(redis) }
 
-      expect(load).to be == true
-      expect(redis).to have_received(:get).with('some name')
-      expect(recording).to have_received(:cache=).with(test_cache)
-      expect(recording).to have_received(:entities=)
+      it { expect(load).to be == false }
     end
   end
 

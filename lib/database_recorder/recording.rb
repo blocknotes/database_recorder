@@ -57,8 +57,8 @@ module DatabaseRecorder
       yield
       storage&.save unless from_cache
       @started = false
-      result = { current_queries: queries.map { _1[:sql] } }
-      result[:stored_queries] = cache.map { _1[:sql] } if from_cache
+      result = { current_queries: queries.map { |query| query[:sql] } }
+      result[:stored_queries] = cache.map { |query| query[:sql] } if from_cache
       result
     end
 

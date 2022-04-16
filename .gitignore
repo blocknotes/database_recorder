@@ -3,5 +3,6 @@
 Gemfile.lock
 
 _misc/
+coverage/
 # spec/dummy/spec/dbr/*.yml
 spec/dummy/log
