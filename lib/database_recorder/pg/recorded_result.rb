@@ -11,9 +11,9 @@ module DatabaseRecorder
       alias :rows :values
 
       def initialize(data)
-        @count = data['count']
-        @fields = data['fields']
-        @values = data['values']
+        @count = data[:count]
+        @fields = data[:fields]
+        @values = data[:values]
       end
 
       def clear; end

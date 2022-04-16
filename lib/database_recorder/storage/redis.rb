@@ -10,9 +10,10 @@ module DatabaseRecorder
       def load
         stored_data = connection.get(@name)
         if stored_data
-          data = JSON.parse(stored_data)
-          @recording.cache = data['queries'] || []
-          @recording.entities = data['entities']
+          parsed_data = JSON.parse(stored_data)
+          data = Core.symbolize_recursive(parsed_data)
+          @recording.cache = data[:queries] || []
+          @recording.entities = data[:entities]
           true
         else
           false
@@ -21,9 +22,9 @@ module DatabaseRecorder
 
       def save
         data = {}
-        data['metadata'] = @recording.metadata unless @recording.metadata.empty?
-        data['queries'] = @recording.queries if @recording.queries.any?
-        data['entities'] = @recording.entities if @recording.entities.any?
+        data[:metadata] = @recording.metadata unless @recording.metadata.empty?
+        data[:queries] = @recording.queries if @recording.queries.any?
+        data[:entities] = @recording.entities if @recording.entities.any?
         serialized_data = data.to_json
         connection.set(@name, serialized_data)
         true

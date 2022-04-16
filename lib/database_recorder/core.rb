@@ -22,5 +22,29 @@ module DatabaseRecorder
       when :pg then PG::Recorder.setup
       end
     end
+
+    def string_keys_recursive(hash)
+      {}.tap do |h|
+        hash.each do |key, value|
+          h[key.to_s] = transform(value, :string_keys_recursive)
+        end
+      end
+    end
+
+    def symbolize_recursive(hash)
+      {}.tap do |h|
+        hash.each do |key, value|
+          h[key.to_sym] = transform(value, :symbolize_recursive)
+        end
+      end
+    end
+
+    def transform(value, source_method)
+      case value
+      when Hash then method(source_method).call(value)
+      when Array then value.map { |v| transform(v, source_method) }
+      else value
+      end
+    end
   end
 end

@@ -13,7 +13,7 @@ module DatabaseRecorder
       end
 
       def format_result(result)
-        { 'count' => result.count, 'fields' => result.fields, 'values' => result.to_a } if result.is_a?(::Mysql2::Result)
+        { count: result.count, fields: result.fields, values: result.to_a } if result.is_a?(::Mysql2::Result)
         # else
         #   last_insert_id = adapter.query('SELECT LAST_INSERT_ID() AS _dbr_last_insert_id').to_a
         #   { 'count' => last_insert_id.count, 'fields' => ['id'], 'values' => last_insert_id }
@@ -36,14 +36,14 @@ module DatabaseRecorder
 
       def store_prepared_statement(adapter, source:, binds:)
         # sql = @last_prepared&.send(:[], 'sql')
-        sql = @last_prepared['sql']
+        sql = @last_prepared[:sql]
         Core.log_query(sql, source)
         if Config.replay_recordings && !Recording.cache.nil?
-          data = Recording.cache.find { |query| query['sql'] == sql }
+          data = Recording.cache.find { |query| query[:sql] == sql }
           return yield unless data # cache miss
 
-          Recording.push(sql: data['sql'], binds: data['binds'], source: source)
-          RecordedResult.new(data['result'].slice('count', 'fields', 'values'))
+          Recording.push(sql: data[:sql], binds: data[:binds], source: source)
+          RecordedResult.new(data[:result].slice(:count, :fields, :values))
         else
           yield.tap do |result|
             Recording.update_prepared(sql: sql, binds: binds, result: format_result(result), source: source)
@@ -60,7 +60,7 @@ module DatabaseRecorder
           data = Recording.cached_query_for(sql)
           return yield unless data # cache miss
 
-          RecordedResult.new.prepare(data['result'].slice('count', 'fields', 'values')) if data['result']
+          RecordedResult.new.prepare(data[:result].slice(:count, :fields, :values)) if data[:result]
         else
           yield.tap do |result|
             Recording.push(sql: sql, result: format_result(result), source: source)

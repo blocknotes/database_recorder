@@ -22,7 +22,7 @@ module DatabaseRecorder
       current = @search_index
       match = cache[@search_index..].find do |item|
         current += 1
-        item['sql'] == sql
+        item[:sql] == sql
       end
       return unless match
 
@@ -33,7 +33,7 @@ module DatabaseRecorder
     end
 
     def new_entity(model:, id:)
-      @entities.push('model' => model, 'id' => id)
+      @entities.push(model: model, id: id)
     end
 
     def pull_entity
@@ -41,12 +41,12 @@ module DatabaseRecorder
     end
 
     def push(sql:, name: nil, binds: nil, result: nil, source: nil)
-      query = { 'name' => name, 'sql' => sql, 'binds' => binds, 'result' => result }.compact
+      query = { name: name, sql: sql, binds: binds, result: result }.compact
       @queries.push(query)
     end
 
     def push_prepared(name: nil, sql: nil, binds: nil, result: nil, source: nil)
-      query = { 'name' => name, 'sql' => sql, 'binds' => binds, 'result' => result }.compact
+      query = { name: name, sql: sql, binds: binds, result: result }.compact
       @@prepared_queries[name || sql] = query
     end
 
@@ -57,16 +57,16 @@ module DatabaseRecorder
       yield
       storage&.save unless from_cache
       @started = false
-      result = { current_queries: queries.map { _1['sql'] } }
-      result[:stored_queries] = cache.map { _1['sql'] } if from_cache
+      result = { current_queries: queries.map { _1[:sql] } }
+      result[:stored_queries] = cache.map { _1[:sql] } if from_cache
       result
     end
 
     def update_prepared(name: nil, sql: nil, binds: nil, result: nil, source: nil)
       query = @@prepared_queries[name || sql]
-      query['sql'] = sql if sql
-      query['binds'] = binds if binds
-      query['result'] = result if result
+      query[:sql] = sql if sql
+      query[:binds] = binds if binds
+      query[:result] = result if result
       @queries.push(query)
       query
     end

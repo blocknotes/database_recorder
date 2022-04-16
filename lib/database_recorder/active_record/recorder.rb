@@ -18,16 +18,16 @@ module DatabaseRecorder
         if Config.replay_recordings && Recording.from_cache
           Recording.push(sql: sql, binds: binds)
           data = Recording.cached_query_for(sql)
-          return yield if !data || !data['result'] # cache miss
+          return yield if !data || !data[:result] # cache miss
 
-          RecordedResult.new(data['result']['fields'], data['result']['values'])
+          RecordedResult.new(data[:result][:fields], data[:result][:values])
         else
           yield.tap do |result|
             result_data =
               if result && (result.respond_to?(:fields) || result.respond_to?(:columns))
                 fields = result.respond_to?(:fields) ? result.fields : result.columns
                 values = result.respond_to?(:values) ? result.values : result.to_a
-                { 'count' => result.count, 'fields' => fields, 'values' => values }
+                { count: result.count, fields: fields, values: values }
               end
             Recording.push(sql: sql, name: name, binds: type_casted_binds, result: result_data)
           end

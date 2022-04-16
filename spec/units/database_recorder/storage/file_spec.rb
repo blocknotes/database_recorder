@@ -16,10 +16,10 @@ RSpec.describe DatabaseRecorder::Storage::File do
     it 'loads data from file', :aggregate_failures do
       test_cache = array_including(
         a_hash_including(
-          'binds' => a_kind_of(Array),
-          'name' => 'Post Load',
-          'result' => a_kind_of(Hash),
-          'sql' => 'SELECT "posts".* FROM "posts" WHERE "posts"."id" = $1 LIMIT $2'
+          binds: a_kind_of(Array),
+          name: 'Post Load',
+          result: a_kind_of(Hash),
+          sql: 'SELECT "posts".* FROM "posts" WHERE "posts"."id" = $1 LIMIT $2'
         )
       )
 

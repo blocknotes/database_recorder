@@ -44,10 +44,10 @@ RSpec.describe DatabaseRecorder::Storage::Redis do
     it 'loads data from redis', :aggregate_failures do
       test_cache = array_including(
         a_hash_including(
-          'binds' => a_kind_of(Array),
-          'name' => 'Post Load',
-          'result' => a_kind_of(Hash),
-          'sql' => 'SELECT "posts".* FROM "posts"'
+          binds: a_kind_of(Array),
+          name: 'Post Load',
+          result: a_kind_of(Hash),
+          sql: 'SELECT "posts".* FROM "posts"'
         )
       )
 

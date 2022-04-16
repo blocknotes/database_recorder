@@ -17,10 +17,10 @@ module DatabaseRecorder
       alias :size :count
 
       def prepare(data)
-        @count = data['count']
-        @fields = data['fields']
-        @entries = data['values']
-        # @values = data['values']
+        @count = data[:count]
+        @fields = data[:fields]
+        @entries = data[:values]
+        # @values = data[:values]
       end
 
       # def server_flags

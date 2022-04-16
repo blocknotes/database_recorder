@@ -25,17 +25,18 @@ RSpec.describe DatabaseRecorder::Mysql2::Recorder, skip: ENV['DB_ADAPTER'] != 'm
     end
 
     after do
+      allow(DatabaseRecorder::Config).to receive(:print_queries).and_return(false)
       client.query('DELETE FROM tags')
     end
 
     it 'enqueues a new recording' do
-      exec_query
-      expect(DatabaseRecorder::Recording.queries).to match_array(
-        a_hash_including(
-          'sql' => sql,
-          'result' => { 'count' => 1, 'fields' => ['name'], 'values' => [{ 'name' => 'tag1' }] }
-        )
+      test_queries = a_hash_including(
+        sql: sql,
+        result: { count: 1, fields: ['name'], values: [{ 'name' => 'tag1' }] }
       )
+
+      exec_query
+      expect(DatabaseRecorder::Recording.queries).to match_array(test_queries)
     end
 
     context 'with config: print_queries = true' do
@@ -59,14 +60,14 @@ RSpec.describe DatabaseRecorder::Mysql2::Recorder, skip: ENV['DB_ADAPTER'] != 'm
       end
 
       it 'enqueues a new recording' do
-        exec_query
-        expect(DatabaseRecorder::Recording.queries).to match_array(
-          a_hash_including(
-            'sql' => 'SELECT name FROM tags WHERE name = ?',
-            'binds' => ['tag2'],
-            'result' => { 'count' => 1, 'fields' => ['name'], 'values' => [{ 'name' => 'tag2' }] }
-          )
+        test_queries = a_hash_including(
+          sql: 'SELECT name FROM tags WHERE name = ?',
+          binds: ['tag2'],
+          result: { count: 1, fields: ['name'], values: [{ 'name' => 'tag2' }] }
         )
+
+        exec_query
+        expect(DatabaseRecorder::Recording.queries).to match_array(test_queries)
       end
     end
   end

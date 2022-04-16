@@ -32,10 +32,7 @@ RSpec.describe DatabaseRecorder::PG::Recorder, skip: ENV['DB_ADAPTER'] != 'postg
     it 'enqueues a new recording' do
       exec_query
       expect(DatabaseRecorder::Recording.queries).to match_array(
-        a_hash_including(
-          'sql' => sql,
-          'result' => { 'count' => 1, 'fields' => ['name'], 'values' => [['tag1']] }
-        )
+        a_hash_including(sql: sql, result: { count: 1, fields: ['name'], values: [['tag1']] } )
       )
     end
 
@@ -55,9 +52,9 @@ RSpec.describe DatabaseRecorder::PG::Recorder, skip: ENV['DB_ADAPTER'] != 'postg
         exec_query
         expect(DatabaseRecorder::Recording.queries).to match_array(
           a_hash_including(
-            'name' => 'statement1',
-            'sql' => 'SELECT name FROM tags WHERE name = $1',
-            'result' => { 'count' => 1, 'fields' => ['name'], 'values' => [['tag2']] }
+            name: 'statement1',
+            sql: 'SELECT name FROM tags WHERE name = $1',
+            result: { count: 1, fields: ['name'], values: [['tag2']] }
           )
         )
       end
