@@ -7,7 +7,7 @@ RSpec.describe DatabaseRecorder::Config do
   let(:default_storage) { described_class::DEFAULT_STORAGE }
 
   describe 'delegation of attributes from the class to the instance' do
-    %i[db_driver print_queries replay_recordings storage].each do |attribute|
+    %i[db_driver log_format print_queries replay_recordings storage storage_options].each do |attribute|
       before do
         allow(instance).to receive(attribute)
         described_class.send(attribute)

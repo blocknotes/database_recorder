@@ -7,8 +7,11 @@ module DatabaseRecorder
     def log_query(sql, source = nil)
       log =
         case DatabaseRecorder::Config.print_queries
-        when true then "[DB] #{sql} [#{source}]"
-        when :color then "[DB] #{CodeRay.scan(sql, :sql).term} [#{source}]"
+        when true
+          DatabaseRecorder::Config.log_format.sub('%name', source.to_s).sub('%sql', sql)
+        when :color
+          code_ray_sql = CodeRay.scan(sql, :sql).term
+          DatabaseRecorder::Config.log_format.sub('%name', source.to_s).sub('%sql', code_ray_sql || '')
         end
 
       puts log if log
