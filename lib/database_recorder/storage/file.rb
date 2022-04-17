@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+require 'yaml'
+
 module DatabaseRecorder
   module Storage
     class File < Base
@@ -21,7 +24,7 @@ module DatabaseRecorder
         data[:metadata] = @recording.metadata unless @recording.metadata.empty?
         data[:queries] = @recording.queries if @recording.queries.any?
         data[:entities] = @recording.entities if @recording.entities.any?
-        serialized_data = Core.string_keys_recursive(data).to_yaml
+        serialized_data = ::YAML.dump(Core.string_keys_recursive(data))
         ::File.write(storage_path, serialized_data)
         true
       end
@@ -30,7 +33,7 @@ module DatabaseRecorder
         @storage_path ||= begin
           name = normalize_name(@name)
           path = @options[:recordings_path] || 'spec/dbr'
-          FileUtils.mkdir_p(path)
+          ::FileUtils.mkdir_p(path)
           "#{path}/#{name}.yml"
         end
       end
