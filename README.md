@@ -60,19 +60,17 @@ end
 ```rb
 DatabaseRecorder::Config.db_driver = :pg
 DatabaseRecorder::Core.setup
-DatabaseRecorder::Recording.new(options: { name: 'pg_file' }).tap do |recording|
-  pp recording.start do
-    PG.connect(DB_CONFIG).exec("INSERT INTO tags(name, created_at, updated_at) VALUES('tag1', NOW(), NOW())")
-    PG.connect(DB_CONFIG).exec("SELECT * FROM tags")
-  end
+pp DatabaseRecorder::Recording.new(options: { name: 'pg_file' }).start do
+  PG.connect(DB_CONFIG).exec("INSERT INTO tags(name, created_at, updated_at) VALUES('tag1', NOW(), NOW())")
+  PG.connect(DB_CONFIG).exec("SELECT * FROM tags")
 end
 ```
 
-Please check more [examples](examples).
+For more examples check [here](examples).
 
-## Config
+## Config options
 
-Add to your _spec_helper.rb_:
+These options are available, they must be set before calling `DatabaseRecorder::Core.setup`:
 
 ```rb
 # Database driver to use: :active_record | :mysql2 | :pg
@@ -120,7 +118,7 @@ Using this feature can improve the test suite performances (especially using red
 It can be activated using `replay_recordings` config option.
 
 Some workarounds to make it works:
-- Run specs with `bin/rspec --order defined`
+- With RSpec, run the tests with `bin/rspec --order defined`
 - Set a specific seed for Faker (optionally with an ENV var): `Faker::Config.random = Random.new(42)`
 - Set a specific Ruby seed (optionally with an ENV var): `srand(42)`
 

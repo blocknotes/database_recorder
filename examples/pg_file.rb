@@ -18,16 +18,14 @@ DatabaseRecorder::Config.storage_options = { recordings_path: './recordings' }
 
 DatabaseRecorder::Core.setup
 
-# Recording
-DatabaseRecorder::Recording.new(options: { name: 'pg_file' }).tap do |recording|
-  puts '>>> Start recording'
-  result = recording.start do
-    PG.connect(DB_CONFIG).exec("INSERT INTO tags(name, created_at, updated_at) VALUES('tag1', NOW(), NOW())")
-    PG.connect(DB_CONFIG).exec("SELECT * FROM tags")
-  end
-  puts '>>> Finish recording'
-  pp result
+puts '>>> Recording'
+result = DatabaseRecorder::Recording.new(options: { name: 'pg_file' }).start do
+  PG.connect(DB_CONFIG).exec("INSERT INTO tags(name, created_at, updated_at) VALUES('tag1', NOW(), NOW())")
+  PG.connect(DB_CONFIG).exec("SELECT * FROM tags")
 end
 
-puts '>>> Recordings'
+puts '>>> Recorded data'
+pp result
+
+puts '>>> Stored files'
 pp Dir['recordings/*.yml']
