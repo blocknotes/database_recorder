@@ -6,7 +6,7 @@
 [![Specs PostgreSQL](https://github.com/blocknotes/database_recorder/actions/workflows/specs_postgres.yml/badge.svg)](https://github.com/blocknotes/database_recorder/actions/workflows/specs_postgres.yml)
 
 Record database queries for testing and development purposes.
-Supports only RSpec at the moment. Store queries information on files or Redis.
+Store queries information on files or Redis.
 
 Main features:
 - store the history of the queries of a test when it run (for monitoring);
@@ -15,10 +15,16 @@ Main features:
 
 Sample output: [test.yml](extra/sample.yml)
 
+Creating an environment variable to enable it with RSpec:
+
+![image1](extra/image1.png)
+
 ## Install
 
+### With RSpec
+
 - Add to your Gemfile: `gem 'database_recorder', require: false` (:development, :test groups recommended)
-- Using RSpec, add in **rails_helper.rb**:
+- Add in **rails_helper.rb**:
 
 ```rb
 require 'database_recorder'
@@ -49,9 +55,20 @@ RSpec.configure do |config|
 end
 ```
 
-Using an environment variable to enable it:
+### With plain Ruby
 
-![image1](extra/image1.png)
+```rb
+DatabaseRecorder::Config.db_driver = :pg
+DatabaseRecorder::Core.setup
+DatabaseRecorder::Recording.new(options: { name: 'pg_file' }).tap do |recording|
+  pp recording.start do
+    PG.connect(DB_CONFIG).exec("INSERT INTO tags(name, created_at, updated_at) VALUES('tag1', NOW(), NOW())")
+    PG.connect(DB_CONFIG).exec("SELECT * FROM tags")
+  end
+end
+```
+
+Please check more [examples](examples).
 
 ## Config
 

@@ -13,8 +13,8 @@ module DatabaseRecorder
         config.around(:each, :dbr) do |example|
           ref = (example.metadata[:scoped_id] || '').split(':')[-1]
           options = {}
+          options[:name] = "#{example.full_description}__#{ref}"
           options.merge!(example.metadata[:dbr]) if example.metadata[:dbr].is_a?(Hash)
-          options.merge!(example: example, name: "#{example.full_description}__#{ref}")
           Recording.new(options: options).tap do |recording|
             recording.metadata = { example: example.id, started_at: Time.now }
             result = recording.start { example.run }

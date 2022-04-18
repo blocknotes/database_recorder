@@ -4,5 +4,5 @@ Gemfile.lock
 
 _misc/
 coverage/
-# spec/dummy/spec/dbr/*.yml
+examples/recordings/
 spec/dummy/log
